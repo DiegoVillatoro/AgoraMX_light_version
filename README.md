@@ -194,7 +194,7 @@ agoramx-cognition/
 └── README.md
 ```
 
-See [`app/README.md`](app/README.md) for the responsibility of each application module.
+See [`app/readme.md`](app/readme.md) for the responsibility of each application module.
 
 ---
 
