@@ -26,7 +26,7 @@ The system is designed to support civic reasoning rather than replace it.
 - **Explicit uncertainty**
 - **Traceable references**
 
-The language model cannot generate or execute arbitrary Cypher. All graph access is performed through predefined, read-only query templates controlled by the application.
+The language model cannot generate or execute arbitrary Cypher. All graph access is performed through predefined, read-only query templates controlled by the application. The fixed queries avoid to the produce syntactically valid but logically incorrect outputs.
 
 Semantic similarity is used as a retrieval mechanism. It does not establish political agreement, coordination, intent, contradiction, guilt, or causality.
 
@@ -190,7 +190,6 @@ agoramx-cognition/
 │   ├── main.py            # FastAPI application
 │   └── static/            # Browser interface
 ├── docs/                  # Technical documentation
-├── tests/                 # Test suite
 ├── .env.example
 └── README.md
 ```
@@ -207,7 +206,6 @@ Recommended environment:
 - Neo4j with vector index support
 - A Neo4j database containing the expected graph schema
 - An OpenAI-compatible chat completion endpoint
-- Ollama or another compatible local inference server
 - Sufficient disk space for the embedding model
 - Internet access during the first embedding model download, unless the model already exists locally
 
@@ -231,7 +229,7 @@ sentence-transformers
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/DiegoVillatoro/AgoraMX_light_version.git
 cd agoramx-cognition
 ```
 
@@ -281,20 +279,9 @@ cp .env.example .env
 
 Update the Neo4j and LLM values in `.env`.
 
-### 5. Start the LLM service
+### 5. Start the Neo4j service
 
-The default configuration expects an OpenAI-compatible endpoint at:
-
-```text
-http://localhost:11434/v1
-```
-
-For example, when using Ollama:
-
-```bash
-ollama serve
-ollama pull qwen2.5:14b
-```
+The default configuration expects the politic database build running
 
 ### 6. Start the application
 
@@ -321,23 +308,30 @@ http://localhost:8000/docs
 Example `.env`:
 
 ```dotenv
+# Neo4j
 NEO4J_URI=neo4j://127.0.0.1:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=change-me
 NEO4J_DATABASE=neo4j
 
+# Embedding model
 MODEL_DIR=./app/models/paraphrase-multilingual-MiniLM-L12-v2
 
-LLM_BASE_URL=http://localhost:11434/v1
+# OpenAI-compatible LLM endpoint
+LLM_BASE_URL=https://api.openai.com/v1
 LLM_API_KEY=local
-LLM_MODEL=qwen2.5:14b
+LLM_MODEL=gpt-4.1-mini
 LLM_TEMPERATURE=0.1
 
+# Retrieval limits
 MAX_GRAPH_RESULTS=12
 MAX_CHUNK_RESULTS=10
 MAX_EVIDENCE_ITEMS=20
 
+# Session management
 SESSION_TTL_MINUTES=60
+
+# Comma-separated list
 CORS_ORIGINS=http://localhost:8000
 ```
 
@@ -504,7 +498,6 @@ See [`docs/limitations.md`](docs/limitations.md).
 | [`docs/cognitive-workflow.md`](docs/cognitive-workflow.md) | Pedagogical investigation process |
 | [`docs/api.md`](docs/api.md) | REST API contract |
 | [`docs/configuration.md`](docs/configuration.md) | Environment settings |
-| [`docs/development.md`](docs/development.md) | Local development and testing |
 | [`docs/security-and-privacy.md`](docs/security-and-privacy.md) | Security and privacy controls |
 | [`docs/limitations.md`](docs/limitations.md) | Known constraints |
 | [`docs/image-prompts.md`](docs/image-prompts.md) | Prompts for documentation diagrams |
@@ -513,11 +506,7 @@ See [`docs/limitations.md`](docs/limitations.md).
 
 ## Important implementation note
 
-Before running the MVP, review `_vector_chunks()` in `app/graph.py`.
-
-The provided draft contains two consecutive vector queries in the same Cypher string, duplicates the `PRESENTED` match, and references `$people` without passing it to `_query()`. The intended implementation should contain one query and explicitly receive the people filter.
-
-A corrected version is documented in [`docs/graph-queries.md`](docs/graph-queries.md).
+A documented of controlled Cypher query patterns is presented in [`docs/graph-queries.md`](docs/graph-queries.md).
 
 ---
 
