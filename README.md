@@ -489,7 +489,6 @@ See [`docs/limitations.md`](docs/limitations.md).
 
 | Document | Purpose |
 |---|---|
-| [`docs/architecture.md`](docs/architecture.md) | Components and data flow |
 | [`docs/graph-schema.md`](docs/graph-schema.md) | Nodes, properties, and relationships |
 | [`docs/graph-queries.md`](docs/graph-queries.md) | Controlled Cypher query patterns |
 | [`docs/agents-and-prompts.md`](docs/agents-and-prompts.md) | Agent responsibilities and prompt policy |
