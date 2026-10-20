@@ -1,1 +1,1809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="description"
+    content="ÁgoraMX, tutor socrático para investigar iniciativas legislativas mediante evidencia documental y un grafo de conocimiento."
+  >
+
+  <meta name="theme-color" content="#1f6b4f">
+
+  <title>ÁgoraMX — Tutor de investigación cívica</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="static/styles.css"
+  >
+
+  <script
+    src="static/app.js"
+    type="module"
+    defer
+  ></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">
+    Saltar al contenido principal
+  </a>
+
+  <!-- ======================================================
+       CABECERA
+       ====================================================== -->
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a
+        class="brand"
+        href="/"
+        aria-label="ÁgoraMX, página principal"
+      >
+        <span class="brand__name">
+          Ágora<span class="brand__accent">MX</span>
+        </span>
+
+        <span class="brand__tagline">
+          Investigación cívica basada en evidencia
+        </span>
+      </a>
+
+      <div class="site-header__actions">
+        <div
+          class="system-status"
+          id="system-status"
+          role="status"
+          aria-live="polite"
+        >
+          <span
+            class="system-status__indicator"
+            id="system-status-indicator"
+            aria-hidden="true"
+          ></span>
+
+          <span id="system-status-text">
+            Verificando servicios
+          </span>
+        </div>
+
+        <button
+          class="button button--ghost button--icon"
+          id="theme-toggle"
+          type="button"
+          aria-label="Activar modo oscuro"
+          aria-pressed="false"
+        >
+          <span
+            class="theme-icon theme-icon--light"
+            aria-hidden="true"
+          >
+            ☀
+          </span>
+
+          <span
+            class="theme-icon theme-icon--dark"
+            aria-hidden="true"
+          >
+            ◐
+          </span>
+
+          <span id="theme-toggle-label">
+            Modo oscuro
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================
+       CONTENIDO PRINCIPAL
+       ====================================================== -->
+
+  <main id="main-content" class="main-content">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__content">
+        <p class="eyebrow">
+          Tutor socrático de investigación legislativa
+        </p>
+
+        <h1 id="hero-title">
+          Investiga iniciativas políticas con documentos reales
+        </h1>
+
+        <p class="hero__description">
+          Formula una pregunta, examina el expediente recuperado
+          desde el grafo, construye una hipótesis y recibe una
+          evaluación de tu razonamiento antes de consultar la
+          síntesis final.
+        </p>
+      </div>
+
+      <aside
+        class="hero__notice"
+        aria-label="Principio de funcionamiento"
+      >
+        <strong>ÁgoraMX no responde inmediatamente.</strong>
+
+        <p>
+          Primero te ayuda a revisar fuentes, separar hechos de
+          inferencias y reconocer los límites de la evidencia.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ====================================================
+         PROGRESO DE LA INVESTIGACIÓN
+         ==================================================== -->
+
+    <nav
+      class="progress-nav"
+      aria-label="Etapas de la investigación"
+    >
+      <ol class="progress-steps" id="progress-steps">
+        <li
+          class="progress-step is-active"
+          data-step="question"
+          aria-current="step"
+        >
+          <span class="progress-step__number">01</span>
+          <span class="progress-step__label">Pregunta</span>
+        </li>
+
+        <li class="progress-step" data-step="plan">
+          <span class="progress-step__number">02</span>
+          <span class="progress-step__label">Plan</span>
+        </li>
+
+        <li class="progress-step" data-step="evidence">
+          <span class="progress-step__number">03</span>
+          <span class="progress-step__label">Expediente</span>
+        </li>
+
+        <li class="progress-step" data-step="reflection">
+          <span class="progress-step__number">04</span>
+          <span class="progress-step__label">Hipótesis</span>
+        </li>
+
+        <li class="progress-step" data-step="synthesis">
+          <span class="progress-step__number">05</span>
+          <span class="progress-step__label">Síntesis</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- ====================================================
+         MENSAJES GLOBALES
+         ==================================================== -->
+
+    <section
+      class="alert alert--error is-hidden"
+      id="global-error"
+      role="alert"
+      aria-live="assertive"
+    >
+      <div class="alert__content">
+        <h2 class="alert__title">
+          No fue posible completar la solicitud
+        </h2>
+
+        <p id="global-error-message">
+          Ocurrió un error inesperado.
+        </p>
+      </div>
+
+      <button
+        class="button button--ghost button--small"
+        id="dismiss-error"
+        type="button"
+      >
+        Cerrar
+      </button>
+    </section>
+
+    <section
+      class="alert alert--info is-hidden"
+      id="global-message"
+      role="status"
+      aria-live="polite"
+    >
+      <p id="global-message-text"></p>
+    </section>
+
+    <!-- ====================================================
+         PASO 1: PREGUNTA
+         ==================================================== -->
+
+    <section
+      class="workspace-section"
+      id="question-section"
+      data-section="question"
+      aria-labelledby="question-title"
+    >
+      <article class="card card--primary">
+        <header class="card__header">
+          <div>
+            <p class="card__step">Paso 1 de 5</p>
+
+            <h2 id="question-title">
+              ¿Qué quieres investigar?
+            </h2>
+          </div>
+        </header>
+
+        <form id="question-form" novalidate>
+          <div class="form-field">
+            <label for="question-input">
+              Pregunta de investigación
+            </label>
+
+            <p class="form-field__description" id="question-help">
+              Formula una pregunta sobre iniciativas, promoventes,
+              temas, leyes o documentos disponibles en el grafo.
+            </p>
+
+            <textarea
+              id="question-input"
+              name="question"
+              rows="6"
+              minlength="10"
+              maxlength="3000"
+              required
+              aria-describedby="question-help question-counter question-error"
+              placeholder="Ejemplo: ¿Qué iniciativas sobre acceso al agua fueron presentadas y qué diferencias existen entre sus propuestas?"
+            ></textarea>
+
+            <div class="form-field__meta">
+              <span
+                class="form-error is-hidden"
+                id="question-error"
+                role="alert"
+              >
+                Escribe una pregunta de al menos 10 caracteres.
+              </span>
+
+              <span
+                class="character-counter"
+                id="question-counter"
+              >
+                0 / 3000
+              </span>
+            </div>
+          </div>
+
+          <div class="example-questions">
+            <h3 class="example-questions__title">
+              Preguntas de ejemplo
+            </h3>
+
+            <div
+              class="example-questions__list"
+              aria-label="Preguntas sugeridas"
+            >
+              <button
+                class="prompt-chip"
+                type="button"
+                data-example-question="¿Qué iniciativas relacionadas con el derecho al agua se han presentado y qué leyes buscan modificar?"
+              >
+                Iniciativas sobre el derecho al agua
+              </button>
+
+              <button
+                class="prompt-chip"
+                type="button"
+                data-example-question="¿Qué diferencias existen entre las iniciativas sobre transparencia en concesiones públicas?"
+              >
+                Comparar iniciativas de transparencia
+              </button>
+
+              <button
+                class="prompt-chip"
+                type="button"
+                data-example-question="¿Qué temas legislativos comparten las iniciativas presentadas por diferentes promoventes?"
+              >
+                Temas compartidos entre promoventes
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              class="button button--primary"
+              id="submit-question"
+              type="submit"
+              disabled
+            >
+              <span class="button__label">
+                Planificar investigación
+              </span>
+
+              <span
+                class="button__loader is-hidden"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
+        </form>
+      </article>
+
+      <aside
+        class="card methodology-card"
+        aria-labelledby="methodology-title"
+      >
+        <h2 id="methodology-title">
+          Cómo funciona la investigación
+        </h2>
+
+        <ol class="methodology-list">
+          <li>
+            <strong>Recuperación controlada:</strong>
+            se ejecutan consultas Cypher predefinidas.
+          </li>
+
+          <li>
+            <strong>Expediente documental:</strong>
+            se presentan iniciativas y fragmentos relevantes.
+          </li>
+
+          <li>
+            <strong>Auditoría:</strong>
+            se evalúan calidad, cobertura y evidencia faltante.
+          </li>
+
+          <li>
+            <strong>Reflexión:</strong>
+            debes formular una hipótesis antes de ver la síntesis.
+          </li>
+        </ol>
+
+        <p class="methodology-card__note">
+          La similitud semántica ayuda a encontrar documentos,
+          pero no demuestra coordinación, intención, acuerdo ni
+          contradicción política.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ====================================================
+         PASO 2: PLAN
+         ==================================================== -->
+
+    <section
+      class="workspace-section is-hidden"
+      id="plan-section"
+      data-section="plan"
+      aria-labelledby="plan-title"
+    >
+      <article class="card">
+        <header class="card__header card__header--split">
+          <div>
+            <p class="card__step">Paso 2 de 5</p>
+
+            <h2 id="plan-title">
+              Plan de investigación
+            </h2>
+
+            <p
+              class="card__subtitle"
+              id="planned-question"
+            ></p>
+          </div>
+
+          <span
+            class="status-badge"
+            id="plan-intent"
+          >
+            Investigación general
+          </span>
+        </header>
+
+        <div class="plan-grid">
+          <section aria-labelledby="normalized-question-title">
+            <h3 id="normalized-question-title">
+              Pregunta normalizada
+            </h3>
+
+            <p id="normalized-question"></p>
+          </section>
+
+          <section aria-labelledby="retrieval-query-title">
+            <h3 id="retrieval-query-title">
+              Consulta de recuperación
+            </h3>
+
+            <pre
+              class="code-block"
+              id="retrieval-query"
+            ></pre>
+          </section>
+        </div>
+
+        <div class="content-grid content-grid--two">
+          <section aria-labelledby="subquestions-title">
+            <h3 id="subquestions-title">
+              Subpreguntas
+            </h3>
+
+            <ol
+              class="structured-list"
+              id="plan-subquestions"
+            ></ol>
+
+            <p
+              class="empty-state is-hidden"
+              id="plan-subquestions-empty"
+            >
+              No se generaron subpreguntas adicionales.
+            </p>
+          </section>
+
+          <section aria-labelledby="detected-entities-title">
+            <h3 id="detected-entities-title">
+              Entidades detectadas
+            </h3>
+
+            <dl class="entity-summary">
+              <div>
+                <dt>Personas</dt>
+                <dd id="plan-people">Ninguna</dd>
+              </div>
+
+              <div>
+                <dt>Temas</dt>
+                <dd id="plan-topics">Ninguno</dd>
+              </div>
+
+              <div>
+                <dt>Leyes</dt>
+                <dd id="plan-laws">Ninguna</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+
+        <div class="content-grid content-grid--two">
+          <section
+            class="capability-panel capability-panel--available"
+            aria-labelledby="required-capabilities-title"
+          >
+            <h3 id="required-capabilities-title">
+              Capacidades utilizadas
+            </h3>
+
+            <ul
+              class="check-list"
+              id="required-capabilities"
+            ></ul>
+          </section>
+
+          <section
+            class="capability-panel capability-panel--unavailable"
+            aria-labelledby="unavailable-capabilities-title"
+          >
+            <h3 id="unavailable-capabilities-title">
+              Límites detectados
+            </h3>
+
+            <ul
+              class="warning-list"
+              id="unavailable-capabilities"
+            ></ul>
+
+            <p
+              class="empty-state is-hidden"
+              id="unavailable-capabilities-empty"
+            >
+              El plan no detectó capacidades faltantes.
+            </p>
+          </section>
+        </div>
+
+        <section
+          class="safety-notes is-hidden"
+          id="safety-notes-panel"
+          aria-labelledby="safety-notes-title"
+        >
+          <h3 id="safety-notes-title">
+            Notas metodológicas
+          </h3>
+
+          <ul id="safety-notes"></ul>
+        </section>
+
+        <div class="form-actions form-actions--between">
+          <button
+            class="button button--ghost"
+            id="edit-question"
+            type="button"
+          >
+            Modificar pregunta
+          </button>
+
+          <button
+            class="button button--primary"
+            id="open-evidence"
+            type="button"
+          >
+            Abrir expediente de evidencia
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- ====================================================
+         ESTADO DE CARGA DE LA INVESTIGACIÓN
+         ==================================================== -->
+
+    <section
+      class="card loading-panel is-hidden"
+      id="investigation-loading"
+      aria-labelledby="investigation-loading-title"
+      aria-live="polite"
+    >
+      <div
+        class="loading-panel__spinner"
+        aria-hidden="true"
+      ></div>
+
+      <div>
+        <h2 id="investigation-loading-title">
+          Construyendo el expediente
+        </h2>
+
+        <p id="investigation-loading-message">
+          Recuperando iniciativas y documentos relacionados.
+        </p>
+
+        <ol class="loading-steps" id="loading-steps">
+          <li data-loading-step="planning">
+            Analizando la pregunta
+          </li>
+
+          <li data-loading-step="retrieval">
+            Consultando los índices vectoriales
+          </li>
+
+          <li data-loading-step="graph">
+            Expandiendo relaciones del grafo
+          </li>
+
+          <li data-loading-step="audit">
+            Auditando la evidencia
+          </li>
+
+          <li data-loading-step="challenge">
+            Preparando el reto socrático
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         PASO 3: EXPEDIENTE
+         ==================================================== -->
+
+    <section
+      class="workspace-section is-hidden"
+      id="evidence-section"
+      data-section="evidence"
+      aria-labelledby="evidence-title"
+    >
+      <article class="card">
+        <header class="card__header card__header--split">
+          <div>
+            <p class="card__step">Paso 3 de 5</p>
+
+            <h2 id="evidence-title">
+              Expediente de evidencia
+            </h2>
+
+            <p class="card__subtitle">
+              Examina las fuentes antes de formular tu hipótesis.
+            </p>
+          </div>
+
+          <div class="answerability-summary">
+            <span>Capacidad de respuesta</span>
+
+            <strong
+              class="status-badge"
+              id="answerability-badge"
+            >
+              Por determinar
+            </strong>
+          </div>
+        </header>
+
+        <!-- Resumen estadístico -->
+
+        <section
+          class="statistics-grid"
+          aria-label="Resumen del expediente"
+        >
+          <article class="stat-card">
+            <span class="stat-card__value" id="initiative-count">
+              0
+            </span>
+            <span class="stat-card__label">
+              Iniciativas
+            </span>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-card__value" id="person-count">
+              0
+            </span>
+            <span class="stat-card__label">
+              Personas
+            </span>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-card__value" id="topic-count">
+              0
+            </span>
+            <span class="stat-card__label">
+              Temas
+            </span>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-card__value" id="evidence-count">
+              0
+            </span>
+            <span class="stat-card__label">
+              Evidencias
+            </span>
+          </article>
+        </section>
+
+        <!-- Navegación interna del expediente -->
+
+        <div
+          class="tab-list"
+          role="tablist"
+          aria-label="Secciones del expediente"
+        >
+          <button
+            class="tab-button is-active"
+            id="graph-tab"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="graph-panel"
+            data-tab="graph"
+          >
+            Grafo
+          </button>
+
+          <button
+            class="tab-button"
+            id="sources-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="sources-panel"
+            data-tab="sources"
+            tabindex="-1"
+          >
+            Fuentes
+          </button>
+
+          <button
+            class="tab-button"
+            id="audit-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="audit-panel"
+            data-tab="audit"
+            tabindex="-1"
+          >
+            Auditoría
+          </button>
+
+          <button
+            class="tab-button"
+            id="limits-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="limits-panel"
+            data-tab="limits"
+            tabindex="-1"
+          >
+            Límites
+          </button>
+        </div>
+
+        <!-- Panel del grafo -->
+
+        <section
+          class="tab-panel"
+          id="graph-panel"
+          role="tabpanel"
+          aria-labelledby="graph-tab"
+          data-tab-panel="graph"
+        >
+          <div class="section-heading">
+            <div>
+              <h3>Relaciones recuperadas</h3>
+
+              <p>
+                Selecciona un nodo para consultar sus propiedades
+                y las evidencias que respaldan sus relaciones.
+              </p>
+            </div>
+
+            <div
+              class="graph-legend"
+              aria-label="Leyenda del grafo"
+            >
+              <span>
+                <i class="legend-dot legend-dot--initiative"></i>
+                Iniciativa
+              </span>
+
+              <span>
+                <i class="legend-dot legend-dot--person"></i>
+                Persona
+              </span>
+
+              <span>
+                <i class="legend-dot legend-dot--topic"></i>
+                Tema
+              </span>
+
+              <span>
+                <i class="legend-dot legend-dot--law"></i>
+                Ley
+              </span>
+
+              <span>
+                <i class="legend-dot legend-dot--document"></i>
+                Documento
+              </span>
+            </div>
+          </div>
+
+          <div class="graph-layout">
+            <div class="graph-container">
+              <div
+                class="graph-toolbar"
+                aria-label="Controles del grafo"
+              >
+                <button
+                  class="button button--ghost button--small"
+                  id="graph-zoom-out"
+                  type="button"
+                  aria-label="Alejar el grafo"
+                >
+                  −
+                </button>
+
+                <button
+                  class="button button--ghost button--small"
+                  id="graph-zoom-level"
+                  type="button"
+                  aria-label="Restablecer zoom al cien por ciento"
+                >
+                  100 %
+                </button>
+
+                <button
+                  class="button button--ghost button--small"
+                  id="graph-zoom-in"
+                  type="button"
+                  aria-label="Acercar el grafo"
+                >
+                  +
+                </button>
+
+                <button
+                  class="button button--ghost button--small"
+                  id="graph-reset"
+                  type="button"
+                >
+                  Restablecer
+                </button>
+              </div>
+
+              <svg
+                id="evidence-graph"
+                class="evidence-graph"
+                viewBox="0 0 1000 560"
+                role="img"
+                aria-labelledby="graph-svg-title graph-svg-description"
+              >
+                <title id="graph-svg-title">
+                  Grafo de relaciones de la investigación
+                </title>
+
+                <desc id="graph-svg-description">
+                  Representación interactiva de las iniciativas,
+                  personas, temas, leyes y documentos recuperados.
+                </desc>
+
+                <defs id="graph-definitions"></defs>
+
+                <g id="graph-viewport">
+                  <g id="graph-edges"></g>
+                  <g id="graph-nodes"></g>
+                </g>
+              </svg>
+
+              <p
+                class="graph-empty-state is-hidden"
+                id="graph-empty-state"
+              >
+                No se recuperaron relaciones suficientes para
+                construir una visualización.
+              </p>
+            </div>
+
+            <aside
+              class="graph-properties"
+              id="graph-properties"
+              aria-labelledby="graph-properties-title"
+            >
+              <h3 id="graph-properties-title">
+                Propiedades
+              </h3>
+
+              <div id="graph-properties-content">
+                <p class="empty-state">
+                  Selecciona un nodo del grafo para consultar sus
+                  propiedades.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Panel de fuentes -->
+
+        <section
+          class="tab-panel is-hidden"
+          id="sources-panel"
+          role="tabpanel"
+          aria-labelledby="sources-tab"
+          data-tab-panel="sources"
+          hidden
+        >
+          <div class="section-heading">
+            <div>
+              <h3>Fuentes recuperadas</h3>
+
+              <p>
+                Cada elemento cuenta con un identificador que
+                puedes citar en tu hipótesis.
+              </p>
+            </div>
+
+            <div class="evidence-filters">
+              <label for="evidence-kind-filter">
+                Mostrar
+              </label>
+
+              <select id="evidence-kind-filter">
+                <option value="all">
+                  Toda la evidencia
+                </option>
+
+                <option value="initiative">
+                  Iniciativas
+                </option>
+
+                <option value="document_chunk">
+                  Fragmentos documentales
+                </option>
+
+                <option value="graph_relation">
+                  Relaciones
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <ol
+            class="evidence-list"
+            id="evidence-list"
+          ></ol>
+
+          <div
+            class="empty-state-panel is-hidden"
+            id="evidence-empty-state"
+          >
+            <h4>No se encontró evidencia suficiente</h4>
+
+            <p>
+              Intenta reformular la pregunta o utilizar conceptos
+              más amplios.
+            </p>
+          </div>
+        </section>
+
+        <!-- Panel de auditoría -->
+
+        <section
+          class="tab-panel is-hidden"
+          id="audit-panel"
+          role="tabpanel"
+          aria-labelledby="audit-tab"
+          data-tab-panel="audit"
+          hidden
+        >
+          <div class="audit-score-grid">
+            <article class="score-card">
+              <span class="score-card__label">
+                Calidad de fuentes
+              </span>
+
+              <strong
+                class="score-card__value"
+                id="source-quality-score"
+              >
+                0
+              </strong>
+
+              <span class="score-card__maximum">/100</span>
+
+              <div
+                class="progress-meter"
+                role="progressbar"
+                aria-label="Calidad de fuentes"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                id="source-quality-meter"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+
+            <article class="score-card">
+              <span class="score-card__label">
+                Cobertura
+              </span>
+
+              <strong
+                class="score-card__value"
+                id="coverage-score"
+              >
+                0
+              </strong>
+
+              <span class="score-card__maximum">/100</span>
+
+              <div
+                class="progress-meter"
+                role="progressbar"
+                aria-label="Cobertura de la pregunta"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                id="coverage-meter"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+          </div>
+
+          <div class="content-grid content-grid--two">
+            <section aria-labelledby="supported-questions-title">
+              <h3 id="supported-questions-title">
+                Preguntas respaldadas
+              </h3>
+
+              <ul
+                class="check-list"
+                id="supported-questions"
+              ></ul>
+
+              <p
+                class="empty-state is-hidden"
+                id="supported-questions-empty"
+              >
+                La auditoría no identificó preguntas plenamente
+                respaldadas.
+              </p>
+            </section>
+
+            <section aria-labelledby="unsupported-questions-title">
+              <h3 id="unsupported-questions-title">
+                Preguntas no respaldadas
+              </h3>
+
+              <ul
+                class="warning-list"
+                id="unsupported-questions"
+              ></ul>
+
+              <p
+                class="empty-state is-hidden"
+                id="unsupported-questions-empty"
+              >
+                No se detectaron preguntas sin respaldo.
+              </p>
+            </section>
+          </div>
+
+          <div class="content-grid content-grid--two">
+            <section aria-labelledby="missing-evidence-title">
+              <h3 id="missing-evidence-title">
+                Evidencia faltante
+              </h3>
+
+              <ul
+                class="structured-list"
+                id="missing-evidence"
+              ></ul>
+            </section>
+
+            <section aria-labelledby="risk-flags-title">
+              <h3 id="risk-flags-title">
+                Riesgos de interpretación
+              </h3>
+
+              <ul
+                class="warning-list"
+                id="risk-flags"
+              ></ul>
+            </section>
+          </div>
+
+          <section
+            class="audit-notes"
+            aria-labelledby="audit-notes-title"
+          >
+            <h3 id="audit-notes-title">
+              Notas de la auditoría
+            </h3>
+
+            <p id="audit-notes"></p>
+          </section>
+        </section>
+
+        <!-- Panel de capacidades y límites -->
+
+        <section
+          class="tab-panel is-hidden"
+          id="limits-panel"
+          role="tabpanel"
+          aria-labelledby="limits-tab"
+          data-tab-panel="limits"
+          hidden
+        >
+          <div class="content-grid content-grid--two">
+            <section
+              class="capability-panel capability-panel--available"
+              aria-labelledby="graph-capabilities-title"
+            >
+              <h3 id="graph-capabilities-title">
+                Lo que el grafo permite examinar
+              </h3>
+
+              <ul
+                class="check-list"
+                id="graph-capabilities"
+              ></ul>
+            </section>
+
+            <section
+              class="capability-panel capability-panel--unavailable"
+              aria-labelledby="graph-limitations-title"
+            >
+              <h3 id="graph-limitations-title">
+                Lo que el grafo no puede confirmar
+              </h3>
+
+              <ul
+                class="warning-list"
+                id="graph-limitations"
+              ></ul>
+            </section>
+          </div>
+        </section>
+
+        <div class="form-actions form-actions--between">
+          <button
+            class="button button--ghost"
+            id="return-to-plan"
+            type="button"
+          >
+            Revisar plan
+          </button>
+
+          <button
+            class="button button--primary"
+            id="continue-to-reflection"
+            type="button"
+          >
+            Continuar a la hipótesis
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- ====================================================
+         PASO 4: RETO SOCRÁTICO
+         ==================================================== -->
+
+    <section
+      class="workspace-section is-hidden"
+      id="reflection-section"
+      data-section="reflection"
+      aria-labelledby="reflection-title"
+    >
+      <article class="card">
+        <header class="card__header">
+          <div>
+            <p class="card__step">Paso 4 de 5</p>
+
+            <h2 id="reflection-title">
+              Formula tu hipótesis
+            </h2>
+
+            <p class="card__subtitle">
+              La síntesis final permanecerá oculta hasta que
+              examines la evidencia y expongas tu razonamiento.
+            </p>
+          </div>
+        </header>
+
+        <section
+          class="challenge-panel"
+          aria-labelledby="challenge-title"
+        >
+          <h3 id="challenge-title">
+            Reto de investigación
+          </h3>
+
+          <p id="challenge-instructions"></p>
+
+          <ol
+            class="challenge-questions"
+            id="challenge-questions"
+          ></ol>
+
+          <div class="required-evidence">
+            <strong>Evidencias sugeridas:</strong>
+
+            <div
+              class="evidence-id-list"
+              id="required-evidence-ids"
+            ></div>
+          </div>
+
+          <p
+            class="challenge-warning"
+            id="challenge-warning"
+          ></p>
+        </section>
+
+        <section
+          class="counter-analysis-panel"
+          aria-labelledby="counter-analysis-title"
+        >
+          <header class="collapsible-header">
+            <div>
+              <p class="eyebrow">Abogado del diablo</p>
+
+              <h3 id="counter-analysis-title">
+                Interpretaciones y objeciones
+              </h3>
+            </div>
+
+            <button
+              class="button button--ghost button--small"
+              id="toggle-counter-analysis"
+              type="button"
+              aria-expanded="true"
+              aria-controls="counter-analysis-content"
+            >
+              Ocultar
+            </button>
+          </header>
+
+          <div id="counter-analysis-content">
+            <div class="content-grid content-grid--two">
+              <section aria-labelledby="alternative-interpretations-title">
+                <h4 id="alternative-interpretations-title">
+                  Interpretaciones alternativas
+                </h4>
+
+                <ul id="alternative-interpretations"></ul>
+              </section>
+
+              <section aria-labelledby="possible-counterevidence-title">
+                <h4 id="possible-counterevidence-title">
+                  Posible contraevidencia
+                </h4>
+
+                <ul id="possible-counterevidence"></ul>
+              </section>
+
+              <section aria-labelledby="invalid-conclusions-title">
+                <h4 id="invalid-conclusions-title">
+                  Conclusiones prematuras
+                </h4>
+
+                <ul id="invalid-conclusions"></ul>
+              </section>
+
+              <section aria-labelledby="questions-to-resolve-title">
+                <h4 id="questions-to-resolve-title">
+                  Preguntas pendientes
+                </h4>
+
+                <ul id="questions-to-resolve"></ul>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <form id="reflection-form" novalidate>
+          <div class="form-field">
+            <label for="reflection-input">
+              Tu razonamiento
+            </label>
+
+            <p
+              class="form-field__description"
+              id="reflection-help"
+            >
+              Formula una hipótesis provisional, cita al menos dos
+              evidencias con el formato [E1], separa hechos de
+              inferencias e identifica qué información falta.
+            </p>
+
+            <textarea
+              id="reflection-input"
+              name="reflection"
+              rows="12"
+              maxlength="6000"
+              required
+              aria-describedby="reflection-help reflection-counter reflection-validation"
+              ></textarea>
+
+            <div class="form-field__meta">
+              <span
+                class="form-validation"
+                id="reflection-validation"
+                aria-live="polite"
+              >
+                Incluye al menos dos referencias [E#].
+              </span>
+
+              <span
+                class="character-counter"
+                id="reflection-counter"
+              >
+                0 / 6000
+              </span>
+            </div>
+          </div>
+
+          <aside
+            class="reflection-checklist"
+            aria-labelledby="reflection-checklist-title"
+          >
+            <h3 id="reflection-checklist-title">
+              Antes de enviar
+            </h3>
+
+            <ul>
+              <li id="check-hypothesis">
+                Formular una hipótesis provisional.
+              </li>
+
+              <li id="check-citations">
+                Citar al menos dos evidencias [E#].
+              </li>
+
+              <li id="check-facts">
+                Separar hechos de inferencias.
+              </li>
+
+              <li id="check-alternative">
+                Considerar una explicación alternativa.
+              </li>
+
+              <li id="check-missing">
+                Indicar qué evidencia falta.
+              </li>
+            </ul>
+          </aside>
+
+          <div class="form-actions form-actions--between">
+            <button
+              class="button button--ghost"
+              id="return-to-evidence"
+              type="button"
+            >
+              Volver al expediente
+            </button>
+
+            <button
+              class="button button--primary"
+              id="submit-reflection"
+              type="submit"
+              disabled
+            >
+              <span class="button__label">
+                Evaluar mi razonamiento
+              </span>
+
+              <span
+                class="button__loader is-hidden"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <!-- ====================================================
+         PASO 5: EVALUACIÓN Y SÍNTESIS
+         ==================================================== -->
+
+    <section
+      class="workspace-section is-hidden"
+      id="synthesis-section"
+      data-section="synthesis"
+      aria-labelledby="synthesis-title"
+    >
+      <article class="card">
+        <header class="card__header">
+          <div>
+            <p class="card__step">Paso 5 de 5</p>
+
+            <h2 id="synthesis-title">
+              Evaluación y síntesis
+            </h2>
+
+            <p class="card__subtitle">
+              Revisa cómo utilizaste la evidencia y compara tu
+              hipótesis con una síntesis prudente.
+            </p>
+          </div>
+        </header>
+
+        <!-- Evaluación -->
+
+        <section
+          class="evaluation-section"
+          aria-labelledby="evaluation-title"
+        >
+          <div class="evaluation-overview">
+            <div
+              class="total-score"
+              aria-label="Calificación total"
+            >
+              <strong id="total-score">0</strong>
+              <span>/100</span>
+            </div>
+
+            <div>
+              <h3 id="evaluation-title">
+                Evaluación del razonamiento
+              </h3>
+
+              <p id="evaluation-feedback"></p>
+            </div>
+          </div>
+
+          <div
+            class="rubric-grid"
+            id="evaluation-rubric"
+          >
+            <article class="rubric-card">
+              <span class="rubric-card__label">
+                Afirmaciones y evidencia
+              </span>
+
+              <strong id="claim-evidence-score">0 / 25</strong>
+
+              <div
+                class="progress-meter"
+                id="claim-evidence-meter"
+                role="progressbar"
+                aria-label="Alineación entre afirmaciones y evidencia"
+                aria-valuemin="0"
+                aria-valuemax="25"
+                aria-valuenow="0"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+
+            <article class="rubric-card">
+              <span class="rubric-card__label">
+                Verificación de fuentes
+              </span>
+
+              <strong id="source-verification-score">
+                0 / 25
+              </strong>
+
+              <div
+                class="progress-meter"
+                id="source-verification-meter"
+                role="progressbar"
+                aria-label="Verificación y calidad de fuentes"
+                aria-valuemin="0"
+                aria-valuemax="25"
+                aria-valuenow="0"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+
+            <article class="rubric-card">
+              <span class="rubric-card__label">
+                Contraargumentos
+              </span>
+
+              <strong id="counterargument-score">0 / 20</strong>
+
+              <div
+                class="progress-meter"
+                id="counterargument-meter"
+                role="progressbar"
+                aria-label="Consideración de contraargumentos"
+                aria-valuemin="0"
+                aria-valuemax="20"
+                aria-valuenow="0"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+
+            <article class="rubric-card">
+              <span class="rubric-card__label">
+                Incertidumbre
+              </span>
+
+              <strong id="uncertainty-score">0 / 15</strong>
+
+              <div
+                class="progress-meter"
+                id="uncertainty-meter"
+                role="progressbar"
+                aria-label="Manejo de incertidumbre"
+                aria-valuemin="0"
+                aria-valuemax="15"
+                aria-valuenow="0"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+
+            <article class="rubric-card">
+              <span class="rubric-card__label">
+                Síntesis y claridad
+              </span>
+
+              <strong id="synthesis-score">0 / 15</strong>
+
+              <div
+                class="progress-meter"
+                id="synthesis-meter"
+                role="progressbar"
+                aria-label="Síntesis y claridad"
+                aria-valuemin="0"
+                aria-valuemax="15"
+                aria-valuenow="0"
+              >
+                <span class="progress-meter__bar"></span>
+              </div>
+            </article>
+          </div>
+
+          <div class="content-grid content-grid--two">
+            <section aria-labelledby="strengths-title">
+              <h3 id="strengths-title">
+                Fortalezas
+              </h3>
+
+              <ul
+                class="check-list"
+                id="evaluation-strengths"
+              ></ul>
+            </section>
+
+            <section aria-labelledby="weaknesses-title">
+              <h3 id="weaknesses-title">
+                Aspectos por mejorar
+              </h3>
+
+              <ul
+                class="warning-list"
+                id="evaluation-weaknesses"
+              ></ul>
+            </section>
+          </div>
+
+          <section aria-labelledby="unsupported-claims-title">
+            <h3 id="unsupported-claims-title">
+              Afirmaciones sin respaldo
+            </h3>
+
+            <ul
+              class="warning-list"
+              id="unsupported-claims"
+            ></ul>
+
+            <p
+              class="empty-state is-hidden"
+              id="unsupported-claims-empty"
+            >
+              No se identificaron afirmaciones claramente
+              desconectadas de la evidencia.
+            </p>
+          </section>
+
+          <section aria-labelledby="improved-steps-title">
+            <h3 id="improved-steps-title">
+              Pasos para mejorar el razonamiento
+            </h3>
+
+            <ol
+              class="structured-list"
+              id="improved-reasoning-steps"
+            ></ol>
+          </section>
+        </section>
+
+        <!-- Síntesis final -->
+
+        <section
+          class="final-synthesis"
+          aria-labelledby="final-answer-title"
+        >
+          <header class="section-heading">
+            <div>
+              <p class="eyebrow">
+                Síntesis basada exclusivamente en el expediente
+              </p>
+
+              <h3 id="final-answer-title">
+                Resultado de la investigación
+              </h3>
+            </div>
+
+            <button
+              class="button button--ghost button--small"
+              id="copy-final-answer"
+              type="button"
+            >
+              Copiar síntesis
+            </button>
+          </header>
+
+          <div
+            class="markdown-content"
+            id="final-answer"
+          ></div>
+        </section>
+
+        <div class="form-actions form-actions--between">
+          <button
+            class="button button--ghost"
+            id="review-reflection"
+            type="button"
+          >
+            Revisar mi reflexión
+          </button>
+
+          <button
+            class="button button--primary"
+            id="start-new-investigation"
+            type="button"
+          >
+            Nueva investigación
+          </button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- ======================================================
+       PIE DE PÁGINA
+       ====================================================== -->
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div>
+        <strong>ÁgoraMX</strong>
+
+        <p>
+          Tutor de investigación cívica basado en evidencia
+          legislativa.
+        </p>
+      </div>
+
+      <div class="site-footer__disclaimer">
+        <p>
+          La información recuperada no sustituye la consulta
+          directa de los documentos oficiales.
+        </p>
+
+        <p>
+          La similitud semántica no demuestra intención,
+          coordinación, acuerdo ni culpabilidad.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================
+       PLANTILLAS DINÁMICAS
+       ====================================================== -->
+
+  <template id="evidence-item-template">
+    <li class="evidence-item">
+      <article>
+        <header class="evidence-item__header">
+          <div class="evidence-item__identity">
+            <span class="evidence-id"></span>
+            <span class="evidence-kind"></span>
+          </div>
+
+          <span class="evidence-score"></span>
+        </header>
+
+        <h4 class="evidence-title"></h4>
+
+        <dl class="evidence-metadata">
+          <div class="evidence-politician-field">
+            <dt>Promovente</dt>
+            <dd class="evidence-politician"></dd>
+          </div>
+
+          <div class="evidence-date-field">
+            <dt>Fecha</dt>
+            <dd class="evidence-date"></dd>
+          </div>
+
+          <div class="evidence-page-field">
+            <dt>Página</dt>
+            <dd class="evidence-page"></dd>
+          </div>
+
+          <div class="evidence-sil-field">
+            <dt>SIL</dt>
+            <dd class="evidence-sil"></dd>
+          </div>
+        </dl>
+
+        <blockquote class="evidence-excerpt"></blockquote>
+
+        <footer class="evidence-item__footer">
+          <div class="evidence-flags">
+            <span
+              class="status-badge evidence-primary-source"
+            >
+              Fuente primaria
+            </span>
+
+            <span
+              class="status-badge evidence-direct-support"
+            >
+              Soporte directo
+            </span>
+          </div>
+
+          <a
+            class="button button--ghost button--small evidence-source-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Consultar fuente
+          </a>
+        </footer>
+      </article>
+    </li>
+  </template>
+
+  <template id="graph-property-template">
+    <div class="graph-property-content">
+      <span class="status-badge graph-property-type"></span>
+
+      <h4 class="graph-property-label"></h4>
+
+      <dl class="graph-property-list"></dl>
+
+      <section class="graph-property-evidence">
+        <h5>Evidencias relacionadas</h5>
+        <div class="evidence-id-list"></div>
+      </section>
+
+      <section class="graph-property-connections">
+        <h5>Conexiones</h5>
+        <ul></ul>
+      </section>
+    </div>
+  </template>
+
+  <template id="list-item-template">
+    <li></li>
+  </template>
+
+  <template id="evidence-reference-template">
+    <button
+      class="evidence-reference"
+      type="button"
+    ></button>
+  </template>
+
+  <!-- ======================================================
+       DIÁLOGO DE EVIDENCIA
+       ====================================================== -->
+
+  <dialog
+    class="evidence-dialog"
+    id="evidence-dialog"
+    aria-labelledby="evidence-dialog-title"
+  >
+    <div class="evidence-dialog__content">
+      <header class="evidence-dialog__header">
+        <div>
+          <span
+            class="evidence-id"
+            id="evidence-dialog-id"
+          ></span>
+
+          <h2 id="evidence-dialog-title">
+            Detalle de evidencia
+          </h2>
+        </div>
+
+        <button
+          class="button button--ghost button--icon"
+          id="close-evidence-dialog"
+          type="button"
+          aria-label="Cerrar detalle de evidencia"
+        >
+          ×
+        </button>
+      </header>
+
+      <div id="evidence-dialog-body"></div>
+    </div>
+  </dialog>
+
+  <!-- ======================================================
+       ESTADO SIN JAVASCRIPT
+       ====================================================== -->
+
+  <noscript>
+    <section class="noscript-message">
+      <h2>JavaScript es necesario</h2>
+
+      <p>
+        ÁgoraMX requiere JavaScript para consultar el expediente,
+        mostrar el grafo y administrar el flujo de investigación.
+      </p>
+    </section>
+  </noscript>
+</body>
+</html>
