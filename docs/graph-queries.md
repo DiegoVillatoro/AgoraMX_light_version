@@ -113,191 +113,6 @@ ORDER BY score DESC
 LIMIT $result_limit
 ```
 
-### Topic filtering
-
-The current draft accepts `$topics` but does not apply it.
-
-A controlled topic filter can be added after collection:
-
-```cypher
-AND (
-    size($topics) = 0
-    OR any(
-        requested_topic IN $topics
-        WHERE any(
-            topic IN topics
-            WHERE toLower(coalesce(topic.name, ''))
-                  CONTAINS toLower(requested_topic)
-        )
-    )
-)
-```
-
-The complete `WHERE` clause would become:
-
-```cypher
-WHERE
-    (
-        size($people) = 0
-        OR any(
-            requested IN $people
-            WHERE any(
-                presenter IN presenters
-                WHERE toLower(coalesce(presenter.name, ''))
-                      CONTAINS toLower(requested)
-            )
-        )
-    )
-    AND
-    (
-        size($topics) = 0
-        OR any(
-            requested_topic IN $topics
-            WHERE any(
-                topic IN topics
-                WHERE toLower(coalesce(topic.name, ''))
-                      CONTAINS toLower(requested_topic)
-            )
-        )
-    )
-```
-
----
-
-## Corrected chunk vector retrieval
-
-The original draft of `_vector_chunks()` contains two consecutive queries in the same Cypher string, a duplicated `PRESENTED` match, and a reference to `$people` without supplying the parameter.
-
-The method should accept the people filter:
-
-```python
-def _vector_chunks(
-    self,
-    embedding: list[float],
-    people: list[str],
-) -> list[dict[str, Any]]:
-```
-
-The caller should pass it:
-
-```python
-chunk_rows = self._vector_chunks(
-    embedding=embedding,
-    people=plan.people,
-)
-```
-
-A corrected query is:
-
-```python
-def _vector_chunks(
-    self,
-    embedding: list[float],
-    people: list[str],
-) -> list[dict[str, Any]]:
-    return self._query(
-        """
-        CALL db.index.vector.queryNodes(
-            'chunk_embedding',
-            $candidate_count,
-            $embedding
-        )
-        YIELD node AS c, score
-
-        MATCH (d:Document)-[:HAS_CHUNK]->(c)
-        MATCH (i:Initiative)-[:HAS_DOCUMENT]->(d)
-
-        OPTIONAL MATCH (p:Person)-[:PRESENTED]->(i)
-        OPTIONAL MATCH
-            (p)-[membership:MEMBER_OF_AT_PRESENTATION]->(party:Party)
-        WHERE membership.initiative_id = i.sil_id
-
-        WITH
-            c,
-            d,
-            i,
-            score,
-            collect(DISTINCT {
-                name: p.name,
-                party: coalesce(party.abbreviation, party.name)
-            }) AS presenters
-
-        WHERE
-            size($people) = 0
-            OR any(
-                requested IN $people
-                WHERE any(
-                    presenter IN presenters
-                    WHERE toLower(coalesce(presenter.name, ''))
-                          CONTAINS toLower(requested)
-                )
-            )
-
-        RETURN
-            c.chunk_id AS chunk_id,
-            c.text AS text,
-            c.page AS page,
-            c.chunk_index AS chunk_index,
-            d.url AS document_url,
-            d.filename AS filename,
-            i.sil_id AS sil_id,
-            i.title AS initiative_title,
-            i.source_url AS initiative_url,
-            toString(i.presentation_date) AS presentation_date,
-            presenters,
-            score
-        ORDER BY score DESC
-        LIMIT $result_limit
-        """,
-        candidate_count=max(
-            self.max_chunk_results * 3,
-            30,
-        ),
-        result_limit=self.max_chunk_results,
-        embedding=embedding,
-        people=people,
-    )
-```
-
----
-
-## Presenter normalization
-
-The chunk query returns presenters as maps:
-
-```json
-[
-  {
-    "name": "Example Person",
-    "party": "ABC"
-  }
-]
-```
-
-The current evidence builder attempts to join the list directly:
-
-```python
-", ".join(row.get("presenters") or [])
-```
-
-That operation expects strings and will fail when the elements are dictionaries.
-
-Use:
-
-```python
-presenter_names = [
-    presenter.get("name", "")
-    for presenter in row.get("presenters", [])
-    if presenter.get("name")
-]
-```
-
-Then:
-
-```python
-politician=", ".join(presenter_names)
-```
-
 ---
 
 ## Example read-only exploration queries
@@ -305,6 +120,7 @@ politician=", ".join(presenter_names)
 These queries are examples for developers and graph administrators. They are not automatically available to the language model.
 
 ### Find initiatives presented by a person
+Replace $person_name by actual name and $limit to number for test
 
 ```cypher
 MATCH (p:Person)-[:PRESENTED]->(i:Initiative)
@@ -320,6 +136,7 @@ LIMIT $limit
 ```
 
 ### Find initiatives associated with a topic
+Replace $topic by actual topic and $limit to number for test
 
 ```cypher
 MATCH (i:Initiative)-[:HAS_TOPIC]->(t:Topic)
@@ -334,6 +151,7 @@ LIMIT $limit
 ```
 
 ### Find affected laws and provisions
+Replace $sil_id by actual id of initiative like "5057564" for test
 
 ```cypher
 MATCH
@@ -349,6 +167,7 @@ ORDER BY l.name, p.article, p.fraction
 ```
 
 ### Retrieve document chunks for one initiative
+Replace $sil_id by actual id of initiative like "5057564" for test
 
 ```cypher
 MATCH
@@ -365,19 +184,8 @@ RETURN
 ORDER BY d.filename, c.chunk_index
 ```
 
-### Find institutions involved in an initiative
-
-```cypher
-MATCH (i:Initiative)-[:INVOLVES]->(institution:Institution)
-WHERE i.sil_id = $sil_id
-RETURN
-    i.title AS initiative,
-    institution.name AS institution,
-    institution.abbreviation AS abbreviation
-ORDER BY institution.name
-```
-
 ### Find initiative context
+Replace $sil_id by actual id of initiative like "5057564" for test
 
 ```cypher
 MATCH (i:Initiative)
@@ -395,6 +203,7 @@ RETURN
 ```
 
 ### Inspect similar initiatives
+Replace $sil_id by actual id and $limit to number for test
 
 ```cypher
 MATCH
@@ -410,42 +219,4 @@ ORDER BY similarity_score DESC
 LIMIT $limit
 ```
 
-### Inspect similar people
-
-```cypher
-MATCH
-    (source:Person)-[r:SEMANTICALLY_SIMILAR]
-    ->(target:Person)
-WHERE source.person_id = $person_id
-RETURN
-    target.person_id AS person_id,
-    target.name AS person,
-    r.score AS similarity_score
-ORDER BY similarity_score DESC
-LIMIT $limit
-```
-
 ---
-
-## Queries that must not be exposed
-
-Do not provide an endpoint that accepts arbitrary Cypher such as:
-
-```json
-{
-  "query": "MATCH (n) RETURN n"
-}
-```
-
-Do not execute query strings produced by the LLM.
-
-Do not use dynamic labels, relationship types, property names, or procedure names based directly on user input.
-
-When a new research capability is needed:
-
-1. Define its evidentiary meaning.
-2. Add a bounded query template.
-3. Add typed parameters.
-4. Add tests.
-5. Add the capability to the planning policy.
-6. Document what the query can and cannot establish.
