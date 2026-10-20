@@ -335,8 +335,6 @@ SESSION_TTL_MINUTES=60
 CORS_ORIGINS=http://localhost:8000
 ```
 
-More details are available in [`docs/configuration.md`](docs/configuration.md).
-
 ---
 
 ## Investigation lifecycle
