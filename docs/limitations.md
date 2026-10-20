@@ -238,17 +238,6 @@ The MVP does not include:
 
 ---
 
-## Current implementation defects
-
-The supplied `_vector_chunks()` draft is not executable as written because it:
-
-1. Includes two consecutive vector queries.
-2. Duplicates the presenter match.
-3. References `$people` without passing it.
-4. Produces presenter maps that are later joined as strings.
-
-These issues must be corrected before the retrieval behavior can be evaluated.
-
 ---
 
 ## Version sensitivity
