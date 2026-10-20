@@ -494,10 +494,8 @@ See [`docs/limitations.md`](docs/limitations.md).
 | [`docs/agents-and-prompts.md`](docs/agents-and-prompts.md) | Agent responsibilities and prompt policy |
 | [`docs/cognitive-workflow.md`](docs/cognitive-workflow.md) | Pedagogical investigation process |
 | [`docs/api.md`](docs/api.md) | REST API contract |
-| [`docs/configuration.md`](docs/configuration.md) | Environment settings |
 | [`docs/security-and-privacy.md`](docs/security-and-privacy.md) | Security and privacy controls |
 | [`docs/limitations.md`](docs/limitations.md) | Known constraints |
-| [`docs/image-prompts.md`](docs/image-prompts.md) | Prompts for documentation diagrams |
 
 ---
 
