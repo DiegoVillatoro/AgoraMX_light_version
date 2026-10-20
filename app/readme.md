@@ -34,7 +34,6 @@ application-controlled query templates.
 
 ```text
 app/
-├── __init__.py
 ├── config.py
 ├── models.py
 ├── llm.py
@@ -257,38 +256,6 @@ Compatibility includes:
 - Similarity function.
 - Input preprocessing.
 
-### Current implementation issue
-
-The draft `_vector_chunks()` implementation must be corrected before use.
-
-It currently:
-
-- Contains two vector searches in one query string.
-- Duplicates a `PRESENTED` match.
-- References `$people` without passing it.
-- Returns presenter maps while `_build_evidence()` attempts to join them as
-  strings.
-
-The intended signature is:
-
-```python
-def _vector_chunks(
-    self,
-    embedding: list[float],
-    people: list[str],
-) -> list[dict[str, Any]]:
-    ...
-```
-
-The caller should pass:
-
-```python
-chunk_rows = self._vector_chunks(
-    embedding=embedding,
-    people=plan.people,
-)
-```
-
 ### Graph snapshot
 
 `build_graph_snapshot()` creates a visualization-oriented projection from the
@@ -407,21 +374,6 @@ The output must contain:
 - Evidence needed to continue.
 - References.
 
-### Prompt-injection boundary
-
-User content and retrieved document text must be treated as untrusted data.
-
-A production prompt should wrap evidence in explicit delimiters:
-
-```text
-<UNTRUSTED_EVIDENCE>
-...
-</UNTRUSTED_EVIDENCE>
-```
-
-Agents must be instructed not to follow commands found inside those
-delimiters.
-
 ---
 
 ## `orchestrator.py`
@@ -505,25 +457,6 @@ It handles:
 | `GET` | `/docs` | Interactive OpenAPI documentation |
 | `GET` | `/openapi.json` | OpenAPI schema |
 
-### Error handling
-
-Production responses must not expose raw exception text, internal paths,
-credentials, Cypher, prompts, or provider responses.
-
-Use an opaque error identifier:
-
-```json
-{
-  "detail": {
-    "code": "INVESTIGATION_FAILED",
-    "message": "The investigation could not be completed.",
-    "request_id": "..."
-  }
-}
-```
-
-Detailed errors should be written only to protected server logs.
-
 ---
 
 ## `static/`
@@ -565,27 +498,6 @@ The frontend must:
 - Use `rel="noopener noreferrer"` for external links.
 - Apply a restrictive Content Security Policy.
 - Avoid storing investigations in `localStorage` unless required.
-
----
-
-## Dependency rules
-
-The intended dependency direction is:
-
-```text
-main.py
-   │
-   ▼
-orchestrator.py
-   ├── agents.py ──> llm.py
-   ├── graph.py
-   └── models.py
-
-config.py ──> main.py, llm.py, graph.py
-models.py ──> agents.py, graph.py, orchestrator.py, main.py
-```
-
-Modules should not create circular dependencies.
 
 ---
 
