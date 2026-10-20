@@ -374,29 +374,3 @@ The dimensions shown above correspond to the expected MiniLM model configuration
 The application itself does not create or modify these indexes.
 
 ---
-
-## Recommended constraints
-
-The application is read-only, but the graph ingestion process should maintain constraints similar to:
-
-```cypher
-CREATE CONSTRAINT initiative_sil_id IF NOT EXISTS
-FOR (i:Initiative)
-REQUIRE i.sil_id IS UNIQUE;
-```
-
-Equivalent uniqueness constraints are recommended for:
-
-- `Person.person_id`
-- `Party.party_id`
-- `Topic.topic_id`
-- `Law.law_id`
-- `Provision.provision_id`
-- `Institution.institution_id`
-- `Document.document_id`
-- `Chunk.chunk_id`
-- `Chamber.name`
-- `Legislature.name`
-- `SourceSystem.name`
-
-These commands belong to graph administration or ingestion tooling, not to the ÁgoraMX runtime.
