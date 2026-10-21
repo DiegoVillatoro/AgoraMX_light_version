@@ -415,7 +415,7 @@ An evidence item can represent:
 - A document chunk
 - A graph relation
 
-Agents must cite these identifiers when making claims. The final synthesis is restricted to the authorized evidence dossier.
+Agents must cite these identifiers when making claims. The final synthesis is restricted to the retrieval evidence.
 
 An identifier only identifies an item in the current investigation. It is not intended to be a permanent global identifier.
 
