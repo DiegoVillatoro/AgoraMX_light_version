@@ -438,3 +438,9 @@ The dimensions shown above correspond to the expected MiniLM model configuration
 The application itself does not create or modify these indexes.
 
 ---
+
+## Overview of the entire graph
+At the moment of creating the graph for this project, it contains only 3 topics of the Legislature LXVI: 366 from "campo," 39 from "justicia," and 129 from "vivienda."
+
+<img width="11880" height="8848" alt="grafo_conocimiento" src="https://github.com/user-attachments/assets/fc96f1d8-3f17-4090-96f9-cd0868b83fd5" />
+
