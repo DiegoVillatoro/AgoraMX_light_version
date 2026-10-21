@@ -9,25 +9,89 @@ The graph is intended to answer questions about documentary and structural relat
 ---
 
 ## Schema diagram
-
 ```mermaid
-graph LR
-    P[Person] -->|PRESENTED| I[Initiative]
-    P -->|MEMBER_OF_AT_PRESENTATION| PA[Party]
+%%{init: {
+  "theme": "base",
+  "flowchart": {
+    "curve": "basis",
+    "nodeSpacing": 40,
+    "rankSpacing": 55,
+    "htmlLabels": true
+  }
+}}%%
 
-    I -->|PRESENTED_IN| C[Chamber]
-    I -->|BELONGS_TO| LGE[Legislature]
-    I -->|OBTAINED_FROM| S[SourceSystem]
-    I -->|HAS_TOPIC| T[Topic]
-    I -->|AFFECTS| PR[Provision]
-    PR -->|PART_OF| L[Law]
-    I -->|INVOLVES| INS[Institution]
-    I -->|HAS_DOCUMENT| D[Document]
-    D -->|HAS_CHUNK| CH[Chunk]
+flowchart TB
+    %% Nodes
+    Initiative(("Initiative"))
+    Person(("Person"))
+    Party(("Party"))
+    Topic(("Topic"))
+    Law(("Law"))
+    Provision(("Provision"))
+    Institution(("Institution"))
+    Document(("Document"))
+    Chunk(("Chunk"))
+    Chamber(("Chamber"))
+    Legislature(("Legislature"))
+    SourceSystem(("Source<br/>System"))
 
-    I -.->|SEMANTICALLY_SIMILAR| I2[Initiative]
-    P -.->|SEMANTICALLY_SIMILAR| P2[Person]
+    %% Structural relationships
+    Person -->|PRESENTED| Initiative
+    Person -->|MEMBER_OF_AT_PRESENTATION| Party
+
+    Initiative -->|PRESENTED_IN| Chamber
+    Initiative -->|BELONGS_TO| Legislature
+    Initiative -->|OBTAINED_FROM| SourceSystem
+    Initiative -->|HAS_TOPIC| Topic
+    Initiative -->|AFFECTS| Provision
+    Initiative -->|INVOLVES| Institution
+    Initiative -->|HAS_DOCUMENT| Document
+
+    Provision -->|PART_OF| Law
+    Document -->|HAS_CHUNK| Chunk
+
+    %% Semantic relationships between entities of the same type
+    Initiative -.->|SEMANTICALLY_SIMILAR| Initiative
+    Person -.->|SEMANTICALLY_SIMILAR| Person
+
+    %% Node styles
+    classDef initiative fill:#C1121F,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef person fill:#005F99,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef party fill:#D95F02,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef topic fill:#007F5F,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef law fill:#593C8F,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef provision fill:#7451A6,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef institution fill:#123B4A,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef document fill:#A66F00,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef chunk fill:#595959,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef chamber fill:#003566,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef legislature fill:#277DA1,color:#FFFFFF,stroke:#222222,stroke-width:3px
+    classDef sourceSystem fill:#B23A48,color:#FFFFFF,stroke:#222222,stroke-width:3px
+
+    class Initiative initiative
+    class Person person
+    class Party party
+    class Topic topic
+    class Law law
+    class Provision provision
+    class Institution institution
+    class Document document
+    class Chunk chunk
+    class Chamber chamber
+    class Legislature legislature
+    class SourceSystem sourceSystem
+
+    %% Structural edges: indexes 0 through 10
+    linkStyle 0,1,2,3,4,5,6,7,8,9,10 stroke:#343434,stroke-width:2px
+
+    %% Semantic edges: indexes 11 and 12
+    linkStyle 11,12 stroke:#D90429,stroke-width:3px,color:#A0001C
 ```
+
+### Relationship types
+
+- **Solid arrows** represent structural relationships.
+- **Dashed red arrows** represent semantic similarity between entities of the same type.
 
 ---
 
