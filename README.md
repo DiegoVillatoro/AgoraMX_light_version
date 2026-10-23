@@ -103,6 +103,8 @@ Student question
 
 ## Knowledge graph
 
+The data from initiatives and graph building with Neo4j can be consulted in the following repository: https://github.com/DiegoVillatoro/AgoraMX_knowledge_graph.git
+
 The Neo4j graph represents:
 
 - Legislative initiatives
